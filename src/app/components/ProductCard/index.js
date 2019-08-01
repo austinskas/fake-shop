@@ -1,6 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './index.scss';
+import React from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import "./index.scss";
+import shop from "../../../shop";
 
 function ProductCard({
   name,
@@ -13,9 +15,11 @@ function ProductCard({
   cartCount,
   toggleFavorite,
   addToCart,
-  removeFromCart,
+  removeFromCart
 }) {
-  const className = isFavorite ? 'ProductCard ProductCard__favorite' : 'ProductCard';
+  const className = isFavorite
+    ? "ProductCard ProductCard__favorite"
+    : "ProductCard";
 
   return (
     <div className={className}>
@@ -33,9 +37,9 @@ function ProductCard({
           <span>Price:</span> <span>{`${price}${currencySymbol}`}</span>
         </p>
         <div>
-          <button type="button" onClick={() => toggleFavorite(id)}>
+          <button type="button" onClick={toggleFavorite}>
             <span role="img" aria-label="add to favorites heart illustration">
-              {isFavorite ? '❌' : '💜'}
+              {isFavorite ? "❌" : "💜"}
             </span>
           </button>
           {!!cartCount && (
@@ -45,11 +49,13 @@ function ProductCard({
               </span>
             </button>
           )}
-          <button type="button" onClick={() => addToCart(id)}>
+          <button type="button" onClick={() => addToCart(cartCount)}>
             <span role="img" aria-label="add to cart illustration">
               🛒
             </span>
-            {!!cartCount && <div className="ProductCard--cta-count">{cartCount}</div>}
+            {!!cartCount && (
+              <div className="ProductCard--cta-count">{cartCount}</div>
+            )}
           </button>
         </div>
       </div>
@@ -57,4 +63,40 @@ function ProductCard({
   );
 }
 
-export default ProductCard;
+function mapStateToProps(state, props) {
+  const { cart, favorites } = state.shop;
+  const item = cart.find(({ id }) => id === props.id);
+
+  return {
+    cartCount: item ? item.count : 0,
+    isFavorite: favorites.includes(props.id)
+  };
+}
+
+function mapDispatchToProps(dispatch, { id }) {
+  //?
+  return {
+    addToCart: count =>
+      dispatch({
+        type: shop.actionTypes.ADD_TO_CART,
+        payload: { id, count: count + 1 }
+      }),
+
+    removeFromCart: () =>
+      dispatch({
+        type: shop.actionTypes.REMOVE_FROM_CART,
+        payload: id
+      }),
+
+    toggleFavorite: () =>
+      dispatch({
+        type: shop.actionTypes.TOGGLE_FAVORITE,
+        payload: id
+      })
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ProductCard);
