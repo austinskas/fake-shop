@@ -1,10 +1,11 @@
-import React from 'react';
-import './index.scss';
+import React, { useContext } from "react";
+import "./index.scss";
+import { ShopContext } from "../../components";
 
 function Error() {
   return (
     <p>
-      Ohhh, no! You don't have anything in your cart{' '}
+      Ohhh, no! You don't have anything in your cart{" "}
       <span role="img" aria-label="crying face emoji">
         😢
       </span>
@@ -43,13 +44,17 @@ function CartRow({ name, count, price, currencySymbol }) {
   );
 }
 
-function Cart({ products, cart }) {
+function Cart() {
+  const { products, cart } = useContext(ShopContext);
   const cartItems = cart.map(item => {
     const product = products.find(({ id }) => id === item.id);
 
     return { ...product, ...item };
   });
-  const total = cartItems.reduce((result, { price, count }) => result + Number(price) * count, 0);
+  const total = cartItems.reduce(
+    (result, { price, count }) => result + Number(price) * count,
+    0
+  );
 
   return (
     <div className="Cart">
