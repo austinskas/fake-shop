@@ -32,6 +32,7 @@
     ]
   },
   "devDependencies": {
+    "jest": "^24.9.0",
     "node-sass": "^4.12.0"
   }
 }
